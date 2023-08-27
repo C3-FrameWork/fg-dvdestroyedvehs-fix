@@ -1,9 +1,10 @@
 -- Made by C3
+-- FIXED
 ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 -- Discord Webhook URL
-local discordWebhook = "WH_URL"
+local discordWebhook = "WH_HERE"
 
 -- Function to send a Discord webhook message
 function SendDiscordWebhook(message)
@@ -12,26 +13,29 @@ function SendDiscordWebhook(message)
     end
 end
 
--- Event triggered when a vehicle is destroyed
-RegisterServerEvent('vehicleDestroyed')
-AddEventHandler('vehicleDestroyed', function(plate)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    if xPlayer then
-        local vehicle = ESX.Game.GetVehicleByPlate(plate)
+-- Event triggered when an entity is damaged
+AddEventHandler('entityDamaged', function(entity, damageData)
+    if DoesEntityExist(entity) and IsEntityAVehicle(entity) then
+        local health = GetEntityHealth(entity)
+        if health <= 0 then
+            local plate = ESX.Game.GetVehicleProperties(entity).plate
 
-        if vehicle then
-            ESX.Game.DeleteVehicle(vehicle)
-            xPlayer.showNotification("Your vehicle has been destroyed and deleted.")
+            if plate then
+                local xPlayer = ESX.GetPlayerFromIdentifier(ESX.GetPlayerIdentifier(source))
+                if xPlayer then
+                    ESX.Game.DeleteVehicle(entity)
+                    xPlayer.showNotification("Your vehicle has been destroyed and deleted.")
 
-            -- Notify the Discord server
-            local playerName = GetPlayerName(source)
-            local vehicleModel = GetDisplayNameFromVehicleModel(vehicle.model)
-            local message = string.format("%s's vehicle (%s) has been destroyed and deleted.", playerName, vehicleModel)
-            SendDiscordWebhook(message)
-        else
-            xPlayer.showNotification("Vehicle not found.")
+                    -- Notify the Discord server
+                    local playerName = xPlayer.getName()
+                    local vehicleModel = GetDisplayNameFromVehicleModel(GetEntityModel(entity))
+                    local message = string.format("%s's vehicle (%s) has been destroyed and deleted.", playerName, vehicleModel)
+                    SendDiscordWebhook(message)
+                end
+            end
         end
     end
 end)
+
 
 print("Made by C3 for FG!")
