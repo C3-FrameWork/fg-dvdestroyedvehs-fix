@@ -4,7 +4,7 @@ ESX = nil
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 -- Discord Webhook URL
-local discordWebhook = "WH_HERE"
+local discordWebhook = "YOUR_DISCORD_WEBHOOK_URL_HERE"
 
 -- Function to send a Discord webhook message
 function SendDiscordWebhook(message)
@@ -36,6 +36,7 @@ AddEventHandler('entityDamaged', function(entity, damageData)
         end
     end
 end)
+
 
 
 print("Made by C3 for FG!")
